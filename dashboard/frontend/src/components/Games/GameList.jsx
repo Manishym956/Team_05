@@ -1,10 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { gamesAPI } from '../../services/api';
 import GameCard from './GameCard';
 import LoadingSkeleton from '../UI/LoadingSkeleton';
+import { RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const GameList = ({ searchParams = {} }) => {
-  const { data, isLoading, error } = useQuery({
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const queryClient = useQueryClient();
+  
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['games', searchParams],
     queryFn: () => {
       if (Object.keys(searchParams).length > 0) {
@@ -14,7 +20,23 @@ const GameList = ({ searchParams = {} }) => {
     },
   });
 
-  if (isLoading) {
+  const handleRefresh = async () => {
+    if (isRefreshing || isFetching) return;
+    
+    setIsRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ['games', searchParams] });
+      await refetch();
+    } catch (err) {
+      console.error('Error refreshing games:', err);
+    } finally {
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 300);
+    }
+  };
+
+  if (isLoading && !data) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {[...Array(8)].map((_, i) => (
@@ -61,10 +83,69 @@ const GameList = ({ searchParams = {} }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {data.results.map((game) => (
-        <GameCard key={game.id} game={game} />
-      ))}
+    <div>
+      {/* Refresh button */}
+      {!isLoading && (
+        <div className="flex justify-end mb-4">
+          <motion.button
+            whileHover={{ scale: isRefreshing || isFetching ? 1 : 1.05 }}
+            whileTap={{ scale: isRefreshing || isFetching ? 1 : 0.95 }}
+            onClick={handleRefresh}
+            disabled={isRefreshing || isFetching}
+            className={`relative flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-glow transition-all duration-200 font-medium overflow-hidden ${
+              isRefreshing || isFetching ? 'opacity-75 cursor-not-allowed' : ''
+            }`}
+          >
+            {/* Loading overlay effect */}
+            {(isRefreshing || isFetching) && (
+              <motion.div
+                initial={{ x: '-100%' }}
+                animate={{ x: '100%' }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.5,
+                  ease: 'linear'
+                }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              />
+            )}
+            <RefreshCw 
+              className={`w-4 h-4 transition-transform duration-300 ${
+                isRefreshing || isFetching ? 'animate-spin' : ''
+              }`} 
+            />
+            <span className="relative z-10">{isRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
+          </motion.button>
+        </div>
+      )}
+      
+      {/* Game grid with loading overlay */}
+      <div className="relative">
+        {/* Loading overlay during refresh */}
+        {(isRefreshing || isFetching) && data && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-xl flex items-center justify-center min-h-[400px]"
+          >
+            <div className="flex flex-col items-center space-y-3">
+              <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin" />
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {Object.keys(searchParams).length > 0 ? 'Refreshing games...' : 'Refreshing trending games...'}
+              </p>
+            </div>
+          </motion.div>
+        )}
+        
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-300 ${
+          isFetching || isRefreshing ? 'opacity-50' : 'opacity-100'
+        }`}>
+          {data.results.map((game) => (
+            <GameCard key={game.id} game={game} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

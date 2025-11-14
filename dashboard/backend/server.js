@@ -145,7 +145,7 @@ app.get('/api/games/search', async (req, res) => {
       });
     }
 
-    const { q, genres, platforms, rating, released } = req.query;
+    const { q, genres, platforms, rating, dates } = req.query;
     
     const cacheKey = `search-${JSON.stringify(req.query)}`;
     const data = await cachedRequest(
@@ -158,11 +158,20 @@ app.get('/api/games/search', async (req, res) => {
           genres: genres || undefined,
           platforms: platforms || undefined,
           rating: rating || undefined,
-          dates: released || undefined
+          dates: dates || undefined
         };
 
-        // Remove undefined params
-        Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
+        // Remove undefined params and empty strings
+        Object.keys(params).forEach(key => {
+          if (params[key] === undefined || params[key] === '' || params[key] === null) {
+            delete params[key];
+          }
+        });
+
+        // Log search params for debugging (only in development)
+        if (process.env.NODE_ENV !== 'production' && Object.keys(params).length > 1) {
+          logger.info('Search params:', JSON.stringify(params, null, 2));
+        }
 
         const response = await axios.get(`${RAWG_BASE_URL}/games`, { params });
         return response.data;

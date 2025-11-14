@@ -29,10 +29,11 @@ const StreamList = () => {
     } catch (err) {
       console.error('Error refreshing streams:', err);
     } finally {
-      // Small delay to show the animation
+      // Keep loading state until refetch completes (handled by isFetching)
+      // Small delay to ensure smooth transition
       setTimeout(() => {
         setIsRefreshing(false);
-      }, 500);
+      }, 300);
     }
   };
 
@@ -88,22 +89,53 @@ const StreamList = () => {
           whileTap={{ scale: isRefreshing || isFetching ? 1 : 0.95 }}
           onClick={handleRefresh}
           disabled={isRefreshing || isFetching}
-          className={`flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-glow transition-all duration-200 font-medium ${
+          className={`relative flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-glow transition-all duration-200 font-medium overflow-hidden ${
             isRefreshing || isFetching ? 'opacity-75 cursor-not-allowed' : ''
           }`}
         >
+          {/* Loading overlay effect */}
+          {(isRefreshing || isFetching) && (
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: 'linear'
+              }}
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            />
+          )}
           <RefreshCw 
-            className={`w-4 h-4 ${isRefreshing || isFetching ? 'animate-spin' : ''}`} 
+            className={`w-4 h-4 transition-transform duration-300 ${
+              isRefreshing || isFetching ? 'animate-spin' : ''
+            }`} 
           />
-          <span>{isRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
+          <span className="relative z-10">{isRefreshing || isFetching ? 'Refreshing...' : 'Refresh'}</span>
         </motion.button>
       </div>
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-300 ${
-        isFetching && !isRefreshing ? 'opacity-60' : 'opacity-100'
-      }`}>
-        {data.data.map((stream) => (
-          <StreamCard key={stream.id} stream={stream} />
-        ))}
+      <div className="relative">
+        {/* Loading overlay during refresh */}
+        {(isRefreshing || isFetching) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-xl flex items-center justify-center"
+          >
+            <div className="flex flex-col items-center space-y-3">
+              <RefreshCw className="w-8 h-8 text-purple-600 dark:text-purple-400 animate-spin" />
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Refreshing streams...</p>
+            </div>
+          </motion.div>
+        )}
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-opacity duration-300 ${
+          isFetching || isRefreshing ? 'opacity-50' : 'opacity-100'
+        }`}>
+          {data.data.map((stream) => (
+            <StreamCard key={stream.id} stream={stream} />
+          ))}
+        </div>
       </div>
     </div>
   );

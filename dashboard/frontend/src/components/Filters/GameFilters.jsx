@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Filter, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,12 +10,77 @@ const GameFilters = ({ onFilterChange, genres = [], platforms = [] }) => {
     rating: '',
     year: '',
   });
+  const debounceTimerRef = useRef(null);
 
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
+    // Trim string values and ensure empty strings are treated as empty
+    const cleanValue = typeof value === 'string' ? value.trim() : value;
+    const newFilters = { ...filters, [key]: cleanValue };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    
+    // For year input, validate and debounce
+    if (key === 'year') {
+      // Clear previous timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      
+      // Only trigger filter if year is complete (4 digits) and valid
+      const year = parseInt(cleanValue, 10);
+      const currentYear = new Date().getFullYear();
+      
+      if (cleanValue === '') {
+        // Empty year - trigger immediately to clear filter
+        onFilterChange(newFilters);
+      } else if (!isNaN(year) && cleanValue.length === 4 && year >= 1970 && year <= currentYear + 1) {
+        // Valid complete year - debounce to avoid multiple calls while typing
+        debounceTimerRef.current = setTimeout(() => {
+          onFilterChange(newFilters);
+        }, 500); // 500ms debounce
+      }
+    } else {
+      // For other filters, trigger immediately
+      onFilterChange(newFilters);
+    }
   };
+
+  const handleYearBlur = (e) => {
+    // Trigger filter when user leaves the year input field
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    // Use the current input value, not state (which might be stale)
+    const yearValue = e.target.value.trim();
+    const currentFilters = { ...filters, year: yearValue };
+    
+    // Validate and trigger if year is valid or empty
+    if (yearValue === '') {
+      setFilters(currentFilters);
+      onFilterChange(currentFilters);
+    } else {
+      const year = parseInt(yearValue, 10);
+      const currentYear = new Date().getFullYear();
+      if (!isNaN(year) && yearValue.length === 4 && year >= 1970 && year <= currentYear + 1) {
+        setFilters(currentFilters);
+        onFilterChange(currentFilters);
+      } else {
+        // Invalid year - reset to empty and trigger
+        const resetFilters = { ...filters, year: '' };
+        setFilters(resetFilters);
+        onFilterChange(resetFilters);
+      }
+    }
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const clearFilters = () => {
     const emptyFilters = { genre: '', platform: '', rating: '', year: '' };
@@ -126,11 +191,13 @@ const GameFilters = ({ onFilterChange, genres = [], platforms = [] }) => {
                   type="number"
                   value={filters.year}
                   onChange={(e) => handleFilterChange('year', e.target.value)}
+                  onBlur={handleYearBlur}
                   placeholder="e.g., 2023"
                   min="1970"
-                  max="2025"
+                  max={new Date().getFullYear() + 1}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter a 4-digit year (1970-{new Date().getFullYear() + 1})</p>
               </div>
             </div>
           </motion.div>

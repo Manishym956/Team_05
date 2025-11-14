@@ -25,10 +25,33 @@ const Dashboard = () => {
 
   const handleFilterChange = (filters) => {
     const params = {};
-    if (filters.genre) params.genres = filters.genre;
-    if (filters.platform) params.platforms = filters.platform;
-    if (filters.rating) params.rating = filters.rating;
-    if (filters.year) params.dates = `${filters.year}-01-01,${filters.year}-12-31`;
+    
+    // Only add non-empty filter values
+    if (filters.genre && filters.genre.trim() !== '') {
+      params.genres = filters.genre;
+    }
+    if (filters.platform && filters.platform.trim() !== '') {
+      params.platforms = filters.platform;
+    }
+    if (filters.rating && filters.rating.trim() !== '') {
+      params.rating = filters.rating;
+    }
+    
+    // Handle year filter with proper validation
+    if (filters.year && filters.year.trim() !== '') {
+      const year = parseInt(filters.year.trim(), 10);
+      const currentYear = new Date().getFullYear();
+      
+      // Validate: must be a valid 4-digit number within valid range
+      if (!isNaN(year) && 
+          filters.year.trim().length === 4 && 
+          year >= 1970 && 
+          year <= currentYear + 1) {
+        // Format: YYYY-MM-DD,YYYY-MM-DD (start date, end date)
+        params.dates = `${year}-01-01,${year}-12-31`;
+      }
+    }
+    
     setSearchParams(params);
   };
 
@@ -51,7 +74,7 @@ const Dashboard = () => {
             GhostMetrics
           </h1>
         </div>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl text-center">
+        <p className="text-lg italic font-medium max-w-2xl text-center bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
           Discover trending games, analyze statistics, and watch live streams in real-time
         </p>
       </motion.div>
