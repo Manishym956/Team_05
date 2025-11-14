@@ -63,7 +63,7 @@ const Dashboard = () => {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-gradient-to-br from-white via-purple-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 transition-colors duration-500 px-2 sm:px-6 py-6 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-500 px-2 sm:px-6 py-6 relative overflow-hidden">
       {/* Animated Background */}
       <AnimatedBackground intensity="medium" speed="normal" />
       
@@ -97,7 +97,7 @@ const Dashboard = () => {
             }}
           />
           <motion.h1 
-            className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent relative"
+            className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 dark:from-slate-200 dark:via-slate-300 dark:to-slate-200 bg-clip-text text-transparent relative"
             animate={{
               backgroundPosition: ["0%", "100%", "0%"]
             }}
@@ -136,7 +136,7 @@ const Dashboard = () => {
           </motion.h1>
         </motion.div>
         <motion.p 
-          className="text-lg italic font-medium max-w-2xl text-center bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent"
+          className="text-lg italic font-medium max-w-2xl text-center bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600 dark:from-slate-300 dark:via-slate-400 dark:to-slate-300 bg-clip-text text-transparent"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.8 }}
@@ -161,7 +161,7 @@ const Dashboard = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <motion.div
-              className="h-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-full"
+              className="h-full bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600 dark:from-slate-400 dark:via-slate-300 dark:to-slate-400 rounded-full"
               animate={{
                 backgroundPosition: ["0%", "100%", "0%"]
               }}
@@ -202,7 +202,7 @@ const Dashboard = () => {
           </motion.h2>
         </div>
         <motion.div 
-          className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14 p-6 rounded-3xl bg-white/80 dark:bg-gray-900/80 shadow-2xl backdrop-blur-md relative overflow-hidden"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14 p-6 rounded-3xl bg-white/90 dark:bg-slate-900/90 shadow-2xl backdrop-blur-md relative overflow-hidden border border-slate-200/60 dark:border-slate-700/50"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
@@ -247,7 +247,7 @@ const Dashboard = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <motion.div
-              className="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"
+              className="h-full bg-gradient-to-r from-slate-600 to-slate-500 dark:from-slate-400 dark:to-slate-300 rounded-full"
               animate={{
                 x: [-20, 20, -20]
               }}
@@ -293,7 +293,7 @@ const Dashboard = () => {
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <motion.div
-              className="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"
+              className="h-full bg-gradient-to-r from-slate-600 to-slate-500 dark:from-slate-400 dark:to-slate-300 rounded-full"
               animate={{
                 x: [-20, 20, -20]
               }}
@@ -324,8 +324,8 @@ const Dashboard = () => {
         transition={{ duration: 0.5, delay: 0.6 }}
         className="mt-16 mb-6 text-center"
       >
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             © 2025 GhostMetrics. All rights are reserved.
           </p>
         </div>

@@ -27,7 +27,7 @@ const Login = () => {
   ];
 
   return (
-    <main className="min-h-screen flex flex-col bg-gradient-to-br from-white via-purple-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 transition-colors duration-500 px-2 sm:px-6 py-6 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-500 px-2 sm:px-6 py-6 relative overflow-hidden">
       {/* Animated Background */}
       <AnimatedBackground intensity="medium" speed="normal" />
       
@@ -40,9 +40,9 @@ const Login = () => {
           className="w-full max-w-md"
         >
           {/* Main Card */}
-          <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 dark:border-slate-700/50">
             {/* Header Section */}
-            <div className="relative bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 p-6 sm:p-8 text-center">
+            <div className="relative bg-gradient-to-br from-slate-700 via-slate-600 to-slate-700 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 p-6 sm:p-8 text-center">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -103,9 +103,9 @@ const Login = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 + index * 0.1 }}
-                    className="flex flex-col items-center p-2 sm:p-3 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30"
+                    className="flex flex-col items-center p-2 sm:p-3 bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800/50 dark:to-slate-700/30 rounded-xl border border-slate-200 dark:border-slate-600/40"
                   >
-                    <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400 mb-1 sm:mb-2" />
+                    <feature.icon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 dark:text-slate-300 mb-1 sm:mb-2" />
                     <span className="text-xs text-gray-700 dark:text-gray-300 text-center font-medium leading-tight">
                       {feature.text}
                     </span>
@@ -128,9 +128,9 @@ const Login = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.9 }}
-                className="flex items-start space-x-2 sm:space-x-3 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700"
+                className="flex items-start space-x-2 sm:space-x-3 p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700"
               >
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
                     Secure Authentication
@@ -147,7 +147,7 @@ const Login = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700"
+              className="px-6 sm:px-8 py-3 sm:py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700"
             >
               <p className="text-center text-xs text-gray-500 dark:text-gray-400">
                 By signing in, you agree to our Terms of Service and Privacy Policy
@@ -165,7 +165,7 @@ const Login = () => {
             New to GhostMetrics? Explore our{' '}
             <button
               onClick={() => navigate('/')}
-              className="font-semibold text-purple-600 dark:text-purple-400 underline hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+              className="font-semibold text-slate-600 dark:text-slate-300 underline hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
             >
               public dashboard
             </button>
