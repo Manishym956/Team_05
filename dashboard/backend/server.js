@@ -348,6 +348,36 @@ app.get('/api/twitch/streams/top', async (req, res) => {
   }
 });
 
+app.get('/api/twitch/streams/game/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const accessToken = await getTwitchAccessToken();
+    
+    const data = await cachedRequest(
+      `twitch-game-streams-${id}`,
+      async () => {
+        const response = await axios.get('https://api.twitch.tv/helix/streams', {
+          headers: {
+            'Client-ID': TWITCH_CLIENT_ID,
+            'Authorization': `Bearer ${accessToken}`
+          },
+          params: {
+            game_id: id,
+            first: 5
+          }
+        });
+        return response.data;
+      },
+      30 // 30 seconds cache
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error(`Error fetching Twitch streams for game ${id}:`, error.message);
+    res.status(500).json({ error: 'Failed to fetch game streams' });
+  }
+});
+
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
