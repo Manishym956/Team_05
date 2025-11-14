@@ -182,6 +182,90 @@ app.get('/api/games/search', async (req, res) => {
   }
 });
 
+app.get('/api/games/:id', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const { id } = req.params;
+    const data = await cachedRequest(
+      `game-${id}`,
+      async () => {
+        const response = await axios.get(`${RAWG_BASE_URL}/games/${id}`, {
+          params: { key: RAWG_API_KEY }
+        });
+        return response.data;
+      },
+      3600 // 1 hour cache for game details
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error(`Error fetching game ${req.params.id}:`, error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch game details';
+    res.status(500).json({ 
+      error: 'Failed to fetch game details',
+      message: errorMessage
+    });
+  }
+});
+
+// GET /api/genres/stats
+app.get('/api/genres/stats', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const data = await cachedRequest(
+      'genres-stats',
+      async () => {
+        const [genresResponse, gamesResponse] = await Promise.all([
+          axios.get(`${RAWG_BASE_URL}/genres`, {
+            params: { key: RAWG_API_KEY, page_size: 100 }
+          }),
+          axios.get(`${RAWG_BASE_URL}/games`, {
+            params: { key: RAWG_API_KEY, page_size: 100, ordering: '-rating' }
+          })
+        ]);
+
+        // Count games per genre
+        const genreCounts = {};
+        gamesResponse.data.results.forEach(game => {
+          game.genres.forEach(genre => {
+            genreCounts[genre.id] = {
+              id: genre.id,
+              name: genre.name,
+              count: (genreCounts[genre.id]?.count || 0) + 1
+            };
+          });
+        });
+
+        return {
+          genres: genresResponse.data.results,
+          distribution: Object.values(genreCounts).sort((a, b) => b.count - a.count)
+        };
+      },
+      900 // 15 minutes cache
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error('Error fetching genre stats:', error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch genre statistics';
+    res.status(500).json({ 
+      error: 'Failed to fetch genre statistics',
+      message: errorMessage
+    });
+  }
+});
 
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
