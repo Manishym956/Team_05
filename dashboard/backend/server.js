@@ -54,6 +54,34 @@ if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
 let twitchAccessToken = null;
 let twitchTokenExpiry = null;
 
+
+async function getTwitchAccessToken() {
+  if (twitchAccessToken && twitchTokenExpiry && Date.now() < twitchTokenExpiry) {
+    return twitchAccessToken;
+  }
+
+  try {
+    const response = await axios.post(
+      'https://id.twitch.tv/oauth2/token',
+      null,
+      {
+        params: {
+          client_id: TWITCH_CLIENT_ID,
+          client_secret: TWITCH_CLIENT_SECRET,
+          grant_type: 'client_credentials'
+        }
+      }
+    );
+
+    twitchAccessToken = response.data.access_token;
+    twitchTokenExpiry = Date.now() + (response.data.expires_in * 1000) - 60000; // 1 min buffer
+    return twitchAccessToken;
+  } catch (error) {
+    logger.error('Error getting Twitch access token:', error.message);
+    throw error;
+  }
+}
+
 async function cachedRequest(key, fetchFn, ttl = 300) {
   const cached = cache.get(key);
   if (cached) {
