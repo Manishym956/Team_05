@@ -2,6 +2,7 @@ import { Moon, Sun, Search, Sparkles } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import dragonLogo from '../../assets/dragon-logo.png'; // Add this import
 
 const Header = ({ onSearchClick }) => {
   const { theme, toggleTheme } = useTheme();
@@ -16,9 +17,11 @@ const Header = ({ onSearchClick }) => {
               whileTap={{ scale: 0.95 }}
               className="relative"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 via-pink-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-glow group-hover:shadow-glow-lg transition-shadow">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
+              <img
+                src={dragonLogo}
+                alt="GhostMetrics Logo"
+                className="w-12 h-12 rounded-xl shadow-glow group-hover:shadow-glow-lg transition-shadow object-cover"
+              />
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse-slow" />
             </motion.div>
             <div>

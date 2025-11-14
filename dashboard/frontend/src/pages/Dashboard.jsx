@@ -8,6 +8,7 @@ import GenreChart from '../components/Charts/GenreChart';
 import PlatformChart from '../components/Charts/PlatformChart';
 import RatingChart from '../components/Charts/RatingChart';
 import StreamList from '../components/Twitch/StreamList';
+import dragonLogo from '../assets/dragon-logo.png'; // Adjust path if needed
 
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useState({});
@@ -39,11 +40,19 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-12 text-center"
+          className="mb-12 text-center flex flex-col items-center"
         >
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
-            Gaming Analytics Dashboard
-          </h1>
+          <div className="flex items-center justify-center mb-4">
+            <img
+              src={dragonLogo}
+              alt="GhostMetrics Logo"
+              className="w-14 h-14 mr-3"
+              style={{ borderRadius: '50%' }}
+            />
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
+              GhostMetrics
+            </h1>
+          </div>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Discover trending games, analyze statistics, and watch live streams in real-time
           </p>
