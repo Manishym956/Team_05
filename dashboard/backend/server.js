@@ -5,8 +5,13 @@ import rateLimit from 'express-rate-limit';
 import NodeCache from 'node-cache';
 import axios from 'axios';
 import winston from 'winston';
+import { initializeGoogleAuth } from './auth/googleAuth.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
+
+// Initialize Google Auth
+initializeGoogleAuth();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,7 +31,10 @@ const logger = winston.createLogger({
 });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3001', 'http://localhost:5173', 'http://localhost:5174'],
+  credentials: true,
+}));
 app.use(express.json());
 
 // Rate limiting
@@ -37,6 +45,9 @@ const limiter = rateLimit({
 });
 
 app.use('/api/', limiter);
+
+// Auth Routes (no rate limit for auth endpoints)
+app.use('/auth', authRoutes);
 
 // Cache configuration
 const cache = new NodeCache({ stdTTL: 300 }); // 5 minutes default TTL

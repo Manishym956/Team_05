@@ -1,10 +1,19 @@
-import { Moon, Sun, Search, Sparkles } from 'lucide-react';
+import { Moon, Sun, Search, Sparkles, LogOut, User } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 const Header = ({ onSearchClick }) => {
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    setShowUserMenu(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-800/50 shadow-soft">
@@ -52,6 +61,65 @@ const Header = ({ onSearchClick }) => {
                 <Moon className="w-5 h-5 text-indigo-600" />
               )}
             </motion.button>
+
+            {/* User Profile Menu or Sign In Button */}
+            {user ? (
+              <div className="relative ml-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  {user.picture ? (
+                    <img
+                      src={user.picture}
+                      alt={user.name}
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  )}
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">
+                    {user.name?.split(' ')[0]}
+                  </span>
+                </motion.button>
+
+                {/* Dropdown Menu */}
+                {showUserMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1"
+                  >
+                    <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                    </div>
+                    <motion.button
+                      whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center space-x-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </motion.button>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="ml-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </motion.button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
