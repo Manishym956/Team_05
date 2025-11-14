@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { twitchAPI } from '../../services/api';
 import StreamCard from './StreamCard';
 import LoadingSkeleton from '../UI/LoadingSkeleton';
@@ -54,15 +55,20 @@ const StreamList = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Live Twitch Streams</h2>
-        <button
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="w-1 h-8 bg-gradient-to-b from-red-500 to-pink-500 rounded-full" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Live Streams</h2>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => refetch()}
-          className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-glow transition-all duration-200 font-medium"
         >
           <RefreshCw className="w-4 h-4" />
           <span>Refresh</span>
-        </button>
+        </motion.button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {data.data.map((stream) => (

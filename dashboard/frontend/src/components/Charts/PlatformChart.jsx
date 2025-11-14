@@ -92,8 +92,11 @@ const PlatformChart = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-      <h3 className="text-lg font-bold mb-4">Platform Popularity</h3>
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-soft hover:shadow-glow transition-all duration-300 border border-gray-100 dark:border-gray-700/50">
+      <div className="flex items-center mb-6">
+        <div className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full mr-3" />
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Platform Popularity</h3>
+      </div>
       <div className="h-64">
         <Bar data={chartData} options={options} />
       </div>
