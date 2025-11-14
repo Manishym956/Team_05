@@ -40,6 +40,15 @@ const cache = new NodeCache({ stdTTL: 300 });
 const RAWG_BASE_URL = 'https://api.rawg.io/api';
 const RAWG_API_KEY = process.env.RAWG_API_KEY;
 
+const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
+
+if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
+  logger.warn('⚠️  Twitch API credentials are not configured. Twitch endpoints will not work.');
+}
+let twitchAccessToken = null;
+let twitchTokenExpiry = null;
+
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
