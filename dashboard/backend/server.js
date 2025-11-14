@@ -267,6 +267,59 @@ app.get('/api/genres/stats', async (req, res) => {
   }
 });
 
+app.get('/api/platforms/stats', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const data = await cachedRequest(
+      'platforms-stats',
+      async () => {
+        const [platformsResponse, gamesResponse] = await Promise.all([
+          axios.get(`${RAWG_BASE_URL}/platforms`, {
+            params: { key: RAWG_API_KEY, page_size: 100 }
+          }),
+          axios.get(`${RAWG_BASE_URL}/games`, {
+            params: { key: RAWG_API_KEY, page_size: 100, ordering: '-rating' }
+          })
+        ]);
+
+        // Count games per platform
+        const platformCounts = {};
+        gamesResponse.data.results.forEach(game => {
+          game.platforms.forEach(platform => {
+            const platformId = platform.platform.id;
+            platformCounts[platformId] = {
+              id: platformId,
+              name: platform.platform.name,
+              count: (platformCounts[platformId]?.count || 0) + 1
+            };
+          });
+        });
+
+        return {
+          platforms: platformsResponse.data.results,
+          distribution: Object.values(platformCounts).sort((a, b) => b.count - a.count)
+        };
+      },
+      900 // 15 minutes cache
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error('Error fetching platform stats:', error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch platform statistics';
+    res.status(500).json({ 
+      error: 'Failed to fetch platform statistics',
+      message: errorMessage
+    });
+  }
+});
+
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
