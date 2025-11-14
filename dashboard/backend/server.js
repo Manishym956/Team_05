@@ -409,6 +409,42 @@ app.get('/api/genres', async (req, res) => {
   }
 });
 
+app.get('/api/platforms', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const data = await cachedRequest(
+      'platforms-list',
+      async () => {
+        const response = await axios.get(`${RAWG_BASE_URL}/platforms`, {
+          params: { key: RAWG_API_KEY, page_size: 100 }
+        });
+        return response.data;
+      },
+      3600 // 1 hour cache
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error('Error fetching platforms:', error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch platforms';
+    res.status(500).json({ 
+      error: 'Failed to fetch platforms',
+      message: errorMessage
+    });
+  }
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
