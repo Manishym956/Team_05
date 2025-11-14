@@ -24,6 +24,22 @@ const logger = winston.createLogger({
   ]
 });
 
+app.use(cors());
+app.use(express.json());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: 'Too many requests from this IP, please try again later.'
+});
+
+app.use('/api/', limiter);
+
+const cache = new NodeCache({ stdTTL: 300 }); 
+
+const RAWG_BASE_URL = 'https://api.rawg.io/api';
+const RAWG_API_KEY = process.env.RAWG_API_KEY;
+
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
