@@ -1,34 +1,40 @@
-import { Moon, Sun, Search, Sparkles } from 'lucide-react';
+import { Moon, Sun, Search } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import dragonLogo from '../../assets/dragon-logo.png'; // Add this import
+import dragonLogo from '../../assets/dragon-logo.png';
 
 const Header = ({ onSearchClick }) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-800/50 shadow-soft">
+    <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 border-b-4 border-purple-500 dark:border-pink-500 shadow-xl backdrop-blur-lg transition-all duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center space-x-3 group">
             <motion.div
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.10, rotate: 8 }}
+              whileTap={{ scale: 0.97 }}
               className="relative"
             >
-              <img
-                src={dragonLogo}
-                alt="GhostMetrics Logo"
-                className="w-12 h-12 rounded-xl shadow-glow group-hover:shadow-glow-lg transition-shadow object-cover"
-              />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse-slow" />
+              {/* Animated, glowing, glassy border */}
+              <div className="p-[3px] rounded-2xl bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400 dark:from-purple-500 dark:via-pink-500 dark:to-indigo-500 shadow-2xl transition-all duration-300 group-hover:shadow-pink-400/40 group-hover:scale-105 animate-border-glow">
+                <div className="rounded-2xl flex items-center justify-center w-16 h-16 bg-white/60 dark:bg-gray-900/70 backdrop-blur-md border-2 border-white/60 dark:border-gray-800/60 shadow-inner">
+                  <img
+                    src={dragonLogo}
+                    alt="GhostMetrics Logo"
+                    className="w-12 h-12 rounded-xl object-cover drop-shadow-xl transition-transform duration-300 group-hover:scale-110"
+                  />
+                </div>
+              </div>
+              {/* Online indicator */}
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse shadow-md" />
             </motion.div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent drop-shadow-lg tracking-wide">
                 GhostMetrics
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Gaming Analytics Platform</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium italic">Gaming Analytics Platform</p>
             </div>
           </Link>
 
