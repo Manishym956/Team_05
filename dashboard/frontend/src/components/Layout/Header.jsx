@@ -1,11 +1,23 @@
-import { Moon, Sun, Search } from 'lucide-react';
+import { Moon, Sun, Search, LogIn, LogOut, User } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import dragonLogo from '../../assets/dragon-logo.png';
 
 const Header = ({ onSearchClick }) => {
   const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignIn = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 border-b-4 border-purple-500 dark:border-pink-500 shadow-xl backdrop-blur-lg transition-all duration-300">
@@ -39,15 +51,19 @@ const Header = ({ onSearchClick }) => {
           </Link>
 
           <div className="flex items-center space-x-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onSearchClick}
-              className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            </motion.button>
+            {onSearchClick && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onSearchClick}
+                className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              </motion.button>
+            )}
+
+            {/* Theme Toggle Button */}
             <motion.button
               whileHover={{ scale: 1.05, rotate: 15 }}
               whileTap={{ scale: 0.95 }}
@@ -61,6 +77,45 @@ const Header = ({ onSearchClick }) => {
                 <Moon className="w-5 h-5 text-indigo-600" />
               )}
             </motion.button>
+            
+            {/* Sign In / User Menu Button */}
+            {isAuthenticated ? (
+              <motion.div
+                className="flex items-center space-x-2"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <motion.div
+                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-200 dark:border-purple-800"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <User className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <span className="text-sm font-medium text-purple-700 dark:text-purple-300 hidden sm:inline">
+                    {user?.name || user?.email || 'User'}
+                  </span>
+                </motion.div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-200 shadow-sm hover:shadow-md"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="w-5 h-5 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400" />
+                </motion.button>
+              </motion.div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSignIn}
+                className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                aria-label="Sign in"
+              >
+                <LogIn className="w-5 h-5" />
+                <span className="hidden sm:inline">Sign In</span>
+              </motion.button>
+            )}
           </div>
         </div>
       </div>

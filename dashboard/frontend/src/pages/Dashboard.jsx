@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 import { metadataAPI } from '../services/api';
 import GameList from '../components/Games/GameList';
 import GameFilters from '../components/Filters/GameFilters';
@@ -8,10 +9,16 @@ import GenreChart from '../components/Charts/GenreChart';
 import PlatformChart from '../components/Charts/PlatformChart';
 import RatingChart from '../components/Charts/RatingChart';
 import StreamList from '../components/Twitch/StreamList';
+import AnimatedBackground from '../components/UI/AnimatedBackground';
 import dragonLogo from '../assets/dragon-logo.png';
 
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useState({});
+  const { theme } = useTheme();
+  const { scrollY } = useScroll();
+  
+  // Parallax effect for background
+  const backgroundY = useTransform(scrollY, [0, 500], [0, 150]);
 
   const { data: genresData } = useQuery({
     queryKey: ['genres'],
@@ -56,7 +63,12 @@ const Dashboard = () => {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-gradient-to-br from-white via-purple-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 transition-colors duration-500 px-2 sm:px-6 py-6">
+    <main className="min-h-screen flex flex-col bg-gradient-to-br from-white via-purple-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 transition-colors duration-500 px-2 sm:px-6 py-6 relative overflow-hidden">
+      {/* Animated Background */}
+      <AnimatedBackground intensity="medium" speed="normal" />
+      
+      {/* Content */}
+      <div className="relative z-10">
       {/* Logo and Title */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -64,19 +76,73 @@ const Dashboard = () => {
         transition={{ duration: 0.5 }}
         className="mb-10 flex flex-col items-center"
       >
-        <div className="flex items-center mb-4">
-          <img
+        <motion.div 
+          className="flex items-center mb-4"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <motion.img
             src={dragonLogo}
             alt="GhostMetrics Logo"
-            className="w-14 h-14 mr-3 rounded-xl shadow-lg"
+            className="w-14 h-14 mr-3 rounded-xl shadow-lg relative z-10"
+            animate={{
+              rotate: [0, 5, -5, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut"
+            }}
           />
-          <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
+          <motion.h1 
+            className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent relative"
+            animate={{
+              backgroundPosition: ["0%", "100%", "0%"]
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            style={{
+              backgroundSize: "200% auto"
+            }}
+          >
             GhostMetrics
-          </h1>
-        </div>
-        <p className="text-lg italic font-medium max-w-2xl text-center bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent">
+            {/* Animated glow effect */}
+            <motion.span
+              className={`absolute inset-0 blur-xl opacity-30 ${
+                theme === 'dark' 
+                  ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400' 
+                  : 'bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300'
+              }`}
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}
+            />
+          </motion.h1>
+        </motion.div>
+        <motion.p 
+          className="text-lg italic font-medium max-w-2xl text-center bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
           Discover trending games, analyze statistics, and watch live streams in real-time
-        </p>
+        </motion.p>
       </motion.div>
 
       {/* Analytics Charts - Make this section much larger and more prominent */}
@@ -84,19 +150,84 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="mb-24" // Increased margin-bottom for more space before Trending Games
+        className="mb-24"
+        whileHover={{ scale: 1.01 }}
       >
         <div className="flex items-center mb-10">
-          <div className="h-2 w-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mr-6" />
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white drop-shadow-lg tracking-wide">
+          <motion.div 
+            className="h-2 rounded-full mr-6 relative overflow-hidden"
+            initial={{ width: 0 }}
+            animate={{ width: 80 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-full"
+              animate={{
+                backgroundPosition: ["0%", "100%", "0%"]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{
+                backgroundSize: "200% auto",
+                width: "100%"
+              }}
+            />
+            {/* Glow effect */}
+            <motion.div
+              className={`absolute inset-0 blur-md ${
+                theme === 'dark' 
+                  ? 'bg-gradient-to-r from-purple-500/50 via-pink-500/50 to-indigo-500/50' 
+                  : 'bg-gradient-to-r from-purple-400/30 via-pink-400/30 to-indigo-400/30'
+              }`}
+              animate={{
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+          <motion.h2 
+            className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white drop-shadow-lg tracking-wide"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
             Analytics Overview
-          </h2>
+          </motion.h2>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14 p-6 rounded-3xl bg-white/80 dark:bg-gray-900/80 shadow-2xl backdrop-blur-md">
+        <motion.div 
+          className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14 p-6 rounded-3xl bg-white/80 dark:bg-gray-900/80 shadow-2xl backdrop-blur-md relative overflow-hidden"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          {/* Animated border glow */}
+          <motion.div
+            className={`absolute inset-0 rounded-3xl ${
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-indigo-600/20'
+                : 'bg-gradient-to-r from-purple-400/10 via-pink-400/10 to-indigo-400/10'
+            }`}
+            animate={{
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            style={{ zIndex: -1 }}
+          />
           <GenreChart />
           <PlatformChart />
           <RatingChart />
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Trending Games Section - Move further down */}
@@ -104,13 +235,38 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="mb-12 mt-24" // Add top margin to push it further down
+        className="mb-12 mt-24"
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
       >
         <div className="flex items-center mb-6">
-          <div className="h-1 w-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mr-4" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <motion.div 
+            className="h-1 rounded-full mr-4 relative overflow-hidden"
+            initial={{ width: 0 }}
+            animate={{ width: 48 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"
+              animate={{
+                x: [-20, 20, -20]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{ width: "150%" }}
+            />
+          </motion.div>
+          <motion.h2 
+            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
             Trending Games
-          </h2>
+          </motion.h2>
         </div>
         <GameFilters
           onFilterChange={handleFilterChange}
@@ -126,15 +282,55 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
         className="mb-12"
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
       >
         <div className="flex items-center mb-6">
-          <div className="h-1 w-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full mr-4" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <motion.div 
+            className="h-1 rounded-full mr-4 relative overflow-hidden"
+            initial={{ width: 0 }}
+            animate={{ width: 48 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"
+              animate={{
+                x: [-20, 20, -20]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              style={{ width: "150%" }}
+            />
+          </motion.div>
+          <motion.h2 
+            className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
             Live Streams
-          </h2>
+          </motion.h2>
         </div>
         <StreamList />
       </motion.div>
+
+      {/* Footer with Copyright */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        className="mt-16 mb-6 text-center"
+      >
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            © 2025 GhostMetrics. All rights reserved.
+          </p>
+        </div>
+      </motion.footer>
+      </div>
     </main>
   );
 };

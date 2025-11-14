@@ -1,21 +1,33 @@
 import { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
 import GameDetails from './components/Games/GameDetails';
 import SearchModal from './components/Search/SearchModal';
 
-function App() {
+function AppContent() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const location = useLocation();
+  const showHeader = location.pathname !== '/login';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header onSearchClick={() => setIsSearchOpen(true)} />
+    <>
+      {showHeader && <Header onSearchClick={() => setIsSearchOpen(true)} />}
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/game/:id" element={<GameDetails />} />
       </Routes>
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {showHeader && <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <AppContent />
     </div>
   );
 }
