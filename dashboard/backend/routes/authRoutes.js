@@ -87,8 +87,9 @@ router.get('/verify', authMiddleware, (req, res) => {
 });
 
 // POST /auth/logout - Logout (client-side token deletion)
-router.post('/logout', authMiddleware, (req, res) => {
-  logger.info(`User logged out: ${req.user.email}`);
+// Note: authMiddleware is optional here since logout can be called without auth
+router.post('/logout', (req, res) => {
+  logger.info('User logged out');
   res.json({
     success: true,
     message: 'Logged out successfully',

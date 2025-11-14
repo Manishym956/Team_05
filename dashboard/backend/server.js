@@ -5,6 +5,8 @@ import rateLimit from 'express-rate-limit';
 import NodeCache from 'node-cache';
 import axios from 'axios';
 import winston from 'winston';
+import authRoutes from './routes/authRoutes.js';
+import { initializeGoogleAuth } from './auth/googleAuth.js';
 
 dotenv.config();
 
@@ -24,7 +26,29 @@ const logger = winston.createLogger({
   ]
 });
 
-app.use(cors());
+// CORS configuration - Allow multiple origins for development
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins in development
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 const limiter = rateLimit({
@@ -51,6 +75,10 @@ if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
 if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
   logger.warn('⚠️  Twitch API credentials are not configured. Twitch endpoints will not work.');
 }
+
+// Initialize Google Auth
+initializeGoogleAuth();
+
 let twitchAccessToken = null;
 let twitchTokenExpiry = null;
 
@@ -449,6 +477,9 @@ app.get('/api/platforms', async (req, res) => {
   }
 });
 
+// Register auth routes
+app.use('/api/auth', authRoutes);
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -458,4 +489,5 @@ app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
   logger.info(`Twitch Client ID: ${TWITCH_CLIENT_ID ? 'Configured' : 'Missing'}`);
+  logger.info(`Google Client ID: ${process.env.GOOGLE_CLIENT_ID ? 'Configured' : 'Missing'}`);
 });

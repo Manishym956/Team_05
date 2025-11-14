@@ -25,6 +25,18 @@ const queryClient = new QueryClient({
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
+// Only wrap with GoogleOAuthProvider if client ID is provided
+const AppWrapper = ({ children }) => {
+  if (GOOGLE_CLIENT_ID) {
+    return (
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        {children}
+      </GoogleOAuthProvider>
+    );
+  }
+  return <>{children}</>;
+};
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -34,7 +46,7 @@ createRoot(document.getElementById('root')).render(
           v7_relativeSplatPath: true,
         }}
       >
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <AppWrapper>
           <ThemeProvider>
             <AuthProvider>
               <DashboardProvider>
@@ -42,7 +54,7 @@ createRoot(document.getElementById('root')).render(
               </DashboardProvider>
             </AuthProvider>
           </ThemeProvider>
-        </GoogleOAuthProvider>
+        </AppWrapper>
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>,

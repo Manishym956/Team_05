@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       console.log('AuthContext: Sending Google token to backend...');
       
       // Send Google token to backend
-      const response = await api.post('/auth/google', { token: googleToken });
+      const response = await api.post('/api/auth/google', { token: googleToken });
 
       console.log('AuthContext: Backend response received:', response.data);
 
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       
       // Call logout endpoint
-      await api.post('/auth/logout');
+      await api.post('/api/auth/logout');
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No refresh token available');
       }
 
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post('/api/auth/refresh', {
         refreshToken: storedRefreshToken,
       });
 

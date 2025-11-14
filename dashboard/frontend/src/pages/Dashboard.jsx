@@ -326,7 +326,7 @@ const Dashboard = () => {
       >
         <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            © 2025 GhostMetrics. All rights reserved.
+            © 2025 GhostMetrics. All rights are reserved.
           </p>
         </div>
       </motion.footer>

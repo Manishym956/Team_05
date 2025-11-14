@@ -9,11 +9,12 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 import { gamesAPI } from '../../services/api';
 import LoadingSkeleton from '../UI/LoadingSkeleton';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 const RatingChart = () => {
   const { data, isLoading, error } = useQuery({

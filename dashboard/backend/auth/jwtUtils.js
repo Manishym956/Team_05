@@ -28,7 +28,7 @@ export const generateTokens = (userId, email, name) => {
     );
 
     const refreshToken = jwt.sign(
-      { userId, email },
+      { userId, email, name },
       REFRESH_TOKEN_SECRET,
       { expiresIn: REFRESH_TOKEN_EXPIRY }
     );
@@ -62,7 +62,7 @@ export const refreshAccessToken = (refreshToken) => {
   try {
     const decoded = verifyRefreshToken(refreshToken);
     const newAccessToken = jwt.sign(
-      { userId: decoded.userId, email: decoded.email },
+      { userId: decoded.userId, email: decoded.email, name: decoded.name },
       JWT_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRY }
     );
