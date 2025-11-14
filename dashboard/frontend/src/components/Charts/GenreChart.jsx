@@ -17,10 +17,17 @@ const GenreChart = () => {
   }
 
   if (error || !data?.distribution) {
+    const isApiKeyError = error?.response?.status === 503;
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
         <h3 className="text-lg font-bold mb-4">Genre Distribution</h3>
-        <p className="text-red-500">Error loading genre statistics</p>
+        <div className="text-center py-4">
+          <p className={isApiKeyError ? "text-yellow-600 dark:text-yellow-400" : "text-red-500"}>
+            {isApiKeyError 
+              ? 'API key not configured' 
+              : 'Error loading genre statistics'}
+          </p>
+        </div>
       </div>
     );
   }

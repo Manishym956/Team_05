@@ -48,6 +48,16 @@ const RAWG_API_KEY = process.env.RAWG_API_KEY;
 // Twitch API configuration
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
+
+// Validate API keys on startup
+if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+  logger.warn('⚠️  RAWG API Key is not configured. RAWG endpoints will not work.');
+  logger.warn('   Get your API key at: https://rawg.io/apidocs');
+}
+
+if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
+  logger.warn('⚠️  Twitch API credentials are not configured. Twitch endpoints will not work.');
+}
 let twitchAccessToken = null;
 let twitchTokenExpiry = null;
 
@@ -101,6 +111,13 @@ async function cachedRequest(key, fetchFn, ttl = 300) {
 // GET /api/games/trending
 app.get('/api/games/trending', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const data = await cachedRequest(
       'trending-games',
       async () => {
@@ -120,13 +137,25 @@ app.get('/api/games/trending', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error('Error fetching trending games:', error.message);
-    res.status(500).json({ error: 'Failed to fetch trending games' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch trending games';
+    res.status(500).json({ 
+      error: 'Failed to fetch trending games',
+      message: errorMessage,
+      details: error.response?.status === 401 ? 'Invalid API key' : undefined
+    });
   }
 });
 
 // GET /api/games/search
 app.get('/api/games/search', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const { q, genres, platforms, rating, released } = req.query;
     
     const cacheKey = `search-${JSON.stringify(req.query)}`;
@@ -155,13 +184,25 @@ app.get('/api/games/search', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error('Error searching games:', error.message);
-    res.status(500).json({ error: 'Failed to search games' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to search games';
+    res.status(500).json({ 
+      error: 'Failed to search games',
+      message: errorMessage,
+      details: error.response?.status === 401 ? 'Invalid API key' : undefined
+    });
   }
 });
 
 // GET /api/games/:id
 app.get('/api/games/:id', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const { id } = req.params;
     const data = await cachedRequest(
       `game-${id}`,
@@ -177,13 +218,24 @@ app.get('/api/games/:id', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error(`Error fetching game ${req.params.id}:`, error.message);
-    res.status(500).json({ error: 'Failed to fetch game details' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch game details';
+    res.status(500).json({ 
+      error: 'Failed to fetch game details',
+      message: errorMessage
+    });
   }
 });
 
 // GET /api/genres/stats
 app.get('/api/genres/stats', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const data = await cachedRequest(
       'genres-stats',
       async () => {
@@ -219,13 +271,24 @@ app.get('/api/genres/stats', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error('Error fetching genre stats:', error.message);
-    res.status(500).json({ error: 'Failed to fetch genre statistics' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch genre statistics';
+    res.status(500).json({ 
+      error: 'Failed to fetch genre statistics',
+      message: errorMessage
+    });
   }
 });
 
 // GET /api/platforms/stats
 app.get('/api/platforms/stats', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const data = await cachedRequest(
       'platforms-stats',
       async () => {
@@ -262,7 +325,11 @@ app.get('/api/platforms/stats', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error('Error fetching platform stats:', error.message);
-    res.status(500).json({ error: 'Failed to fetch platform statistics' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch platform statistics';
+    res.status(500).json({ 
+      error: 'Failed to fetch platform statistics',
+      message: errorMessage
+    });
   }
 });
 
@@ -331,6 +398,13 @@ app.get('/api/twitch/streams/game/:id', async (req, res) => {
 // GET /api/genres
 app.get('/api/genres', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const data = await cachedRequest(
       'genres-list',
       async () => {
@@ -345,13 +419,24 @@ app.get('/api/genres', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error('Error fetching genres:', error.message);
-    res.status(500).json({ error: 'Failed to fetch genres' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch genres';
+    res.status(500).json({ 
+      error: 'Failed to fetch genres',
+      message: errorMessage
+    });
   }
 });
 
 // GET /api/platforms
 app.get('/api/platforms', async (req, res) => {
   try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
     const data = await cachedRequest(
       'platforms-list',
       async () => {
@@ -366,7 +451,11 @@ app.get('/api/platforms', async (req, res) => {
     res.json(data);
   } catch (error) {
     logger.error('Error fetching platforms:', error.message);
-    res.status(500).json({ error: 'Failed to fetch platforms' });
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch platforms';
+    res.status(500).json({ 
+      error: 'Failed to fetch platforms',
+      message: errorMessage
+    });
   }
 });
 
