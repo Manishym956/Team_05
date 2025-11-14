@@ -43,11 +43,33 @@ const RAWG_API_KEY = process.env.RAWG_API_KEY;
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
 
+if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+  logger.warn('⚠️  RAWG API Key is not configured. RAWG endpoints will not work.');
+  logger.warn('   Get your API key at: https://rawg.io/apidocs');
+}
+
 if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
   logger.warn('⚠️  Twitch API credentials are not configured. Twitch endpoints will not work.');
 }
 let twitchAccessToken = null;
 let twitchTokenExpiry = null;
+
+async function cachedRequest(key, fetchFn, ttl = 300) {
+  const cached = cache.get(key);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const data = await fetchFn();
+    cache.set(key, data, ttl);
+    return data;
+  } catch (error) {
+    logger.error(`Error fetching ${key}:`, error.message);
+    throw error;
+  }
+}
+
 
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
