@@ -98,6 +98,90 @@ async function cachedRequest(key, fetchFn, ttl = 300) {
   }
 }
 
+app.get('/api/games/trending', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const data = await cachedRequest(
+      'trending-games',
+      async () => {
+        const response = await axios.get(`${RAWG_BASE_URL}/games`, {
+          params: {
+            key: RAWG_API_KEY,
+            page_size: 20,
+            ordering: '-rating',
+            dates: '2020-01-01,2025-12-31'
+          }
+        });
+        return response.data;
+      },
+      300 // 5 minutes cache
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error('Error fetching trending games:', error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch trending games';
+    res.status(500).json({ 
+      error: 'Failed to fetch trending games',
+      message: errorMessage,
+      details: error.response?.status === 401 ? 'Invalid API key' : undefined
+    });
+  }
+});
+
+// GET /api/games/search
+app.get('/api/games/search', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const { q, genres, platforms, rating, released } = req.query;
+    
+    const cacheKey = `search-${JSON.stringify(req.query)}`;
+    const data = await cachedRequest(
+      cacheKey,
+      async () => {
+        const params = {
+          key: RAWG_API_KEY,
+          page_size: 20,
+          search: q || undefined,
+          genres: genres || undefined,
+          platforms: platforms || undefined,
+          rating: rating || undefined,
+          dates: released || undefined
+        };
+
+        // Remove undefined params
+        Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
+
+        const response = await axios.get(`${RAWG_BASE_URL}/games`, { params });
+        return response.data;
+      },
+      600 // 10 minutes cache for search
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error('Error searching games:', error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to search games';
+    res.status(500).json({ 
+      error: 'Failed to search games',
+      message: errorMessage,
+      details: error.response?.status === 401 ? 'Invalid API key' : undefined
+    });
+  }
+});
+
 
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
