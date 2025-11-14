@@ -378,6 +378,37 @@ app.get('/api/twitch/streams/game/:id', async (req, res) => {
   }
 });
 
+app.get('/api/genres', async (req, res) => {
+  try {
+    if (!RAWG_API_KEY || RAWG_API_KEY === 'your_rawg_api_key_here') {
+      return res.status(503).json({ 
+        error: 'RAWG API key not configured',
+        message: 'Please add your RAWG API key to the .env file. Get one at https://rawg.io/apidocs'
+      });
+    }
+
+    const data = await cachedRequest(
+      'genres-list',
+      async () => {
+        const response = await axios.get(`${RAWG_BASE_URL}/genres`, {
+          params: { key: RAWG_API_KEY, page_size: 100 }
+        });
+        return response.data;
+      },
+      3600 // 1 hour cache
+    );
+
+    res.json(data);
+  } catch (error) {
+    logger.error('Error fetching genres:', error.message);
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to fetch genres';
+    res.status(500).json({ 
+      error: 'Failed to fetch genres',
+      message: errorMessage
+    });
+  }
+});
+
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
   logger.info(`RAWG API Key: ${RAWG_API_KEY ? 'Configured' : 'Missing'}`);
