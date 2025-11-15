@@ -15,15 +15,15 @@ A comprehensive, modern gaming analytics platform that provides real-time insigh
 *Interactive analytics dashboard showing genre distribution, platform popularity, and rating trends*
 
 ### Login Page
-![Login Page](assets/screenshots/login-page.png)
+![Login Page](dashboard/frontend/src/assets/Screenshot 2025-11-15 at 7.22.30 AM.png)
 *Secure Google OAuth authentication page with professional design*
 
 ### Trending Games
-![Trending Games](assets/screenshots/trending-games.png)
+![Trending Games](dashboard/frontend/src/assets/Screenshot 2025-11-15 at 7.21.35 AM.png)
 *Browse and discover trending games with advanced filtering options*
 
 ### Live Streams
-![Live Streams](assets/screenshots/live-streams.png)
+![Live Streams](dashboard/frontend/src/assets/Screenshot 2025-11-15 at 7.21.51 AM.png)
 *Real-time Twitch stream integration showing top live gaming streams*
 
 ## ✨ Features
