@@ -11,20 +11,32 @@ A comprehensive, modern gaming analytics platform that provides real-time insigh
 ## 📸 Screenshots
 
 ### Dashboard - Analytics Overview
-<img width="933" height="491" alt="image" src="https://github.com/user-attachments/assets/3d7fbc2f-7e46-43b8-bae0-3d84e30f0a6d" />
+<img width="1468" height="776" alt="Screenshot 2025-11-15 at 7 21 14 AM" src="https://github.com/user-attachments/assets/2982f827-f839-4690-892a-acc7a7de276a" />
+
+<img width="1468" height="831" alt="Screenshot 2025-11-15 at 7 22 15 AM" src="https://github.com/user-attachments/assets/e254e913-1523-4043-8ab3-5f745b514c30" />
+
+
 *Interactive analytics dashboard showing genre distribution, platform popularity, and rating trends*
 
+
 ### Login Page
-<img width="870" height="495" alt="image" src="https://github.com/user-attachments/assets/dab6d987-06ea-4dbc-8799-83c5e404c0c1" />
+<img width="1465" height="832" alt="Screenshot 2025-11-15 at 7 22 30 AM" src="https://github.com/user-attachments/assets/d6e14c2f-9bce-48a9-8606-66b8a85944b5" />
+
 *Secure Google OAuth authentication page with professional design*
 
+
 ### Trending Games
-<img width="869" height="499" alt="image" src="https://github.com/user-attachments/assets/d7534624-603b-4c73-81c5-bb947e2692dc" />
+<img width="1462" height="837" alt="Screenshot 2025-11-15 at 7 21 35 AM" src="https://github.com/user-attachments/assets/575504b7-f95c-428e-8c10-a2941f2dfc3d" />
+
+
 *Browse and discover trending games with advanced filtering options*
 
+
 ### Live Streams
-<img width="875" height="498" alt="image" src="https://github.com/user-attachments/assets/51748f67-c70a-42ba-b897-da424f69240c" />
+<img width="1470" height="834" alt="Screenshot 2025-11-15 at 7 21 51 AM" src="https://github.com/user-attachments/assets/0bb3fbfe-909f-4ff4-98b7-c35f73875acd" />
+
 *Real-time Twitch stream integration showing top live gaming streams*
+
 
 ## ✨ Features
 
