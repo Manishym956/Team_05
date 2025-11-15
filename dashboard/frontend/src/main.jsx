@@ -25,6 +25,23 @@ const queryClient = new QueryClient({
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
+// Debug logging for Google OAuth setup
+if (GOOGLE_CLIENT_ID) {
+  console.log('🔐 Google OAuth Configuration:');
+  console.log('  Client ID:', GOOGLE_CLIENT_ID.substring(0, 20) + '...');
+  console.log('  Current Origin:', window.location.origin);
+  console.log('  ⚠️  Add these EXACT origins to Google Cloud Console:');
+  console.log('    - http://localhost:5173');
+  console.log('    - http://127.0.0.1:5173');
+  console.log('    - http://localhost:3000');
+  console.log('    - http://127.0.0.1:3000');
+  console.log('  📝 Path: APIs & Services → Credentials → Edit OAuth Client');
+} else {
+  console.warn('⚠️  VITE_GOOGLE_CLIENT_ID is not set in environment variables');
+  console.warn('  Create dashboard/frontend/.env with:');
+  console.warn('  VITE_GOOGLE_CLIENT_ID=your_client_id_here');
+}
+
 // Only wrap with GoogleOAuthProvider if client ID is provided
 const AppWrapper = ({ children }) => {
   if (GOOGLE_CLIENT_ID) {
